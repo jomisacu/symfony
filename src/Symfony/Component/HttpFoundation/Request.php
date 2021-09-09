@@ -310,6 +310,12 @@ class Request
         ) {
             parse_str($request->getContent(), $data);
             $request->request = new InputBag($data);
+        } else {
+            if ($request->headers->get('CONTENT_TYPE', '') == 'application/json' 
+                && strtoupper($request->server->get('REQUEST_METHOD', 'GET')) == 'POST'
+            ) {
+                $request->request = new InputBag(\json_decode($request->getContent(), true) ?? []);
+            }
         }
 
         return $request;
